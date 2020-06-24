@@ -26,3 +26,41 @@ sys.path.insert(0, os.path.abspath('/opt/intel_devcloud_support'))
 sys.path.insert(0, os.path.abspath('/opt/intel'))
 </code></pre>
 
+# The Model
+We will be using the <code>vehicle-license-plate-detection-barrier-0106</code> model for this exercise. Remember that to run a model on the CPU, we need to use <code>FP32</code> as the model precision.
+
+The model has already been downloaded for you in the <code>/data/models/intel</code> directory on Intel's DevCloud. We will be using the following filepath during the job submission in <strong>Step 3</strong>:
+
+<code>/data/models/intel/vehicle-license-plate-detection-barrier-0106/FP32/vehicle-license-plate-detection-barrier-0106</code>
+
+# Step 1: Creating a Python Script
+The first step is to create a Python script that you can use to load the model and perform an inference. I have used the <code>%%writefile</code> magic command to create a Python file called <code>load_model_to_cpu.py</code>. This will create a new Python file in the working directory.
+
+<pre><code>
+%%writefile load_model_to_cpu.py
+
+import time
+from openvino.inference_engine import IENetwork
+from openvino.inference_engine import IECore
+import argparse
+
+def main(args):
+    model=args.model_path
+    model_weights=model+'.bin'
+    model_structure=model+'.xml'
+    
+    start=time.time()
+    model=IENetwork(model_structure, model_weights)
+
+    core = IECore()
+    net = core.load_network(network=model, device_name='CPU', num_requests=1)
+    print(f"Time taken to load model on Xeon CPU = {time.time()-start} seconds")
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--model_path', required=True)
+    
+    args=parser.parse_args() 
+    main(args)
+</code></pre>
+
