@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.abspath('/opt/intel'))
 </code></pre>
 
 # The Model
+
 We will be using the <code>vehicle-license-plate-detection-barrier-0106</code> model for this exercise. Remember that to run a model on the CPU, we need to use <code>FP32</code> as the model precision.
 
 The model has already been downloaded for you in the <code>/data/models/intel</code> directory on Intel's DevCloud. We will be using the following filepath during the job submission in <strong>Step 3</strong>:
@@ -34,6 +35,7 @@ The model has already been downloaded for you in the <code>/data/models/intel</c
 <code>/data/models/intel/vehicle-license-plate-detection-barrier-0106/FP32/vehicle-license-plate-detection-barrier-0106</code>
 
 # Step 1: Creating a Python Script
+
 The first step is to create a Python script that you can use to load the model and perform an inference. I have used the <code>%%writefile</code> magic command to create a Python file called <code>load_model_to_cpu.py</code>. This will create a new Python file in the working directory.
 
 <pre><code>
@@ -64,7 +66,8 @@ if __name__=='__main__':
     main(args)
 </code></pre>
 
-# Step 2: Creating a Job Submission Script¶
+# Step 2: Creating a Job Submission Script
+
 To submit a job to the DevCloud, we need to create a shell script. Similar to the Python script above, I have used the <code>%%writefile</code> magic command to create a shell script called <code>load_cpu_model_job.sh</code>.
 
 This script does a few things.
@@ -94,7 +97,8 @@ cd /output
 tar zcvf output.tgz stdout.log stderr.log
 </code></pre>
 
-# Step 3: Submitting a Job to Intel's DevCloud¶
+# Step 3: Submitting a Job to Intel's DevCloud
+
 The code below will submit a job to an IEI Tank-870 edge node with an Intel® Xeon processor. We will load the model on the CPU.
 
 The <code>!qsub</code> command takes a few command line arguments:
@@ -116,6 +120,7 @@ print(job_id_core[0])
 </code></pre>
 
 # Step 4: Running liveQStat
+
 Running the <code>liveQStat</code> function, we can see the live status of our job. Running the this function will lock the cell and poll the job status 10 times. The cell is locked until this finishes polling 10 times or you can interrupt the kernel to stop it by pressing the stop button at the top:
 
 .<code>Q</code> status means our job is currently awaiting an available node
@@ -129,6 +134,7 @@ liveQStat.liveQStat()
 </code></pre>
 
 # Step 5: Retrieving Output Files
+
 In this step, we'll be using the <code>getResults</code> function to retrieve our job's results. This function takes a few arguments.
 
 1. <code>job id</code> - This value is stored in the <code>job_id_core</code> variable we created during <strong>Step 3</strong>. Remember that this value is an array with a single string, so we access the string value using <code>job_id_core[0]</code>.
@@ -144,6 +150,7 @@ get_results.getResults(job_id_core[0], filename="output.tgz", blocking=True)
 </code></pre>
 
 # Step 6: Viewing the Outputs
+
 In this step, we unpack the compressed file using <code>!tar zxf</code> and read the contents of the log files by using the <code>!cat</code> command.
 
 <code>stdout.log</code> should contain the printout of the print statement in our Python script.
